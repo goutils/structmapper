@@ -1,8 +1,12 @@
-package structmapper
+package main
 
 import "reflect"
 
-func GetValueObject(v interface{}) reflect.Value {
+func main() {
+
+}
+
+func getValueObject(v interface{}) reflect.Value {
 	return reflect.New(reflect.TypeOf(v)).Elem()
 }
 
@@ -13,7 +17,7 @@ func fromFieldValues(v reflect.Value, index int) (reflect.Value, reflect.StructF
 func AutoMap(from interface{}, to interface{}) (interface{}, error) {
 
 	fromVal := reflect.ValueOf(from)
-	toVal := GetValueObject(to)
+	toVal := getValueObject(to)
 
 	for index := 0; index < fromVal.NumField(); index++ {
 

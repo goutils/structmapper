@@ -1,4 +1,4 @@
-package structmapper
+package main
 
 import (
 	"fmt"
