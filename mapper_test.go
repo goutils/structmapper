@@ -1,4 +1,4 @@
-package main
+package structmapper
 
 import (
 	"fmt"
@@ -22,6 +22,10 @@ type C struct {
 
 type D struct {
 	B B
+}
+
+type E struct {
+	ArrayField []int
 }
 
 func TestAutoMapWorksForSameFieldSet(t *testing.T) {
@@ -59,4 +63,16 @@ func TestAutoMapWorksForEmbeddedFieldSet(t *testing.T) {
 		t.Fail()
 	}
 	fmt.Println(from,to)
+}
+
+func TestAutoMapCanCopyArrayFields(t *testing.T) {
+	from := E{[]int{1,2,3}}
+
+	result, err := AutoMap(from, E{[]int{}})
+	to := result.(E)
+
+	if err != nil {
+		t.Fail()
+	}
+	fmt.Println(from.ArrayField,to.ArrayField)
 }

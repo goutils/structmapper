@@ -1,4 +1,4 @@
-package main
+package structmapper
 
 import "reflect"
 
@@ -22,19 +22,10 @@ func AutoMap(from interface{}, to interface{}) (interface{}, error) {
 	for index := 0; index < fromVal.NumField(); index++ {
 
 		fromField, fromFieldType, fromFieldTypeName := fromFieldValues(fromVal, index)
-
-		toField := toVal.FieldByName(fromFieldTypeName)
 		toFieldType, toFieldExist := toVal.Type().FieldByName(fromFieldTypeName)
+		
 		if toFieldExist && fromFieldType.Type == toFieldType.Type {
-			if fromField.Type().Kind().String() == "struct" && toField.Type().Kind().String() == "struct" {
-				field, err := AutoMap(fromField.Interface(), toField.Interface())
-				if err != nil {
-					return nil, err
-				}
-				toVal.FieldByName(fromFieldTypeName).Set(reflect.ValueOf(field))
-			}else {
 				toVal.FieldByName(fromFieldTypeName).Set(fromField)
-			}
 		}
 	}
 	return toVal.Interface(), nil
