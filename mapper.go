@@ -1,8 +1,8 @@
 package structmapper
 
 import (
-	"log"
 	"reflect"
+	"log"
 )
 
 func main() {
@@ -21,23 +21,28 @@ func AutoMap(from interface{}, to interface{}) error {
 		fromField, fromFieldKind, fromFieldTypeName := fromFieldValues(fromVal, index)
 		toFieldType, toFieldExist := toVal.Type().FieldByName(fromFieldTypeName)
 
-		if toFieldExist {
+		if toFieldExist && fromFieldKind == toFieldType.Type.Kind() {
 			switch fromFieldKind {
 			case reflect.Struct:
 				toStructField := reflect.New(toFieldType.Type)
-				AutoMap(fromField, toStructField.Interface())
+				AutoMap(fromField.Interface(), toStructField.Interface())
+				toVal.FieldByName(fromFieldTypeName).Set(toStructField.Elem())
 			case reflect.Slice:
 				if reflect.ValueOf(fromField.Type()).Interface() == toFieldType.Type {
-					log.Println("copying value", fromFieldTypeName)
 					toVal.FieldByName(fromFieldTypeName).Set(fromField)
 				} else {
-					// toSliceField := reflect.New(toFieldType.Type)
-					s := reflect.ValueOf(fromField.Interface())
 
-					for i := 0; i < s.Len(); i++ {
-						log.Println(s.Index(i).Type())
-
+					toFieldElemType := toVal.FieldByName(fromFieldTypeName).Type().Elem()
+					toSliceField := reflect.New(toFieldType.Type).Elem()
+					for i := 0; i < fromField.Len(); i++ {
+						fromFieldElem :=  fromField.Index(i)
+						toFieldElem := reflect.New(toFieldElemType)
+						log.Println(toFieldElem.Interface())
+						AutoMap(fromFieldElem.Interface(),toFieldElem.Interface())
+						toSliceField = reflect.Append(toSliceField, toFieldElem.Elem())
 					}
+
+					toVal.FieldByName(fromFieldTypeName).Set(toSliceField)
 				}
 			default:
 				toVal.FieldByName(fromFieldTypeName).Set(fromField)
