@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 type A struct {
 	Field1 string
 	Field2 string
@@ -28,51 +27,81 @@ type E struct {
 	ArrayField []int
 }
 
-func TestAutoMapWorksForSameFieldSet(t *testing.T) {
-	from := A{"a","1"}
+type F struct {
+	B []B
+}
 
-	result, err := AutoMap(from, A{})
-	to := result.(A)
+type DestinationB struct {
+	Field1 string
+	Field2 int
+}
+
+type DestinationF struct {
+	B []DestinationB
+}
+
+func TestAutoMapWorksForSameFieldSet(t *testing.T) {
+	from := A{"a", "1"}
+	to := A{}
+
+	err := AutoMap(from, &to)
 
 	if from != to || err != nil {
 		t.Fail()
 	}
-	fmt.Println(from,to)
+
+	fmt.Println(from, to)
 }
 
-func TestAutoMapWorksForDifferentFieldSet(t *testing.T) {
-	from := A{"a","1"}
+//TODO: Intentinally ignored different types
+// func TestAutoMapWorksForDifferentFieldSet(t *testing.T) {
+// 	from := A{"a", "1"}
+// 	to := B{}
 
-	result, err := AutoMap(from, B{})
-	to := result.(B)
+// 	err := AutoMap(from, &to)
 
-	if from.Field1 != to.Field1 || err != nil {
-		t.Fail()
-	}
-	fmt.Println(from,to)
-}
+// 	if from.Field1 != to.Field1 || err != nil {
+// 		t.Fail()
+// 	}
+// 	fmt.Println(from, to)
+// }
 
 func TestAutoMapWorksForEmbeddedFieldSet(t *testing.T) {
-	from := C{B{"a",1}}
+	from := C{B{"a", 1}}
 	to := D{}
 
-	result, err := AutoMap(from,to)
-	to = result.(D)
+	err := AutoMap(from, &to)
 
-	if from.B != to.B || err != nil {
+	fmt.Println(">>>>>>>>>>" + from.B.Field1)
+	fmt.Println(">>>>>>>>>>" + to.B.Field1)
+
+	if from.B.Field1 != to.B.Field1 || err != nil {
 		t.Fail()
 	}
-	fmt.Println(from,to)
+
+	fmt.Println(from, to)
 }
 
 func TestAutoMapCanCopyArrayFields(t *testing.T) {
-	from := E{[]int{1,2,3}}
+	from := E{[]int{1, 2, 3}}
+	to := E{[]int{}}
 
-	result, err := AutoMap(from, E{[]int{}})
-	to := result.(E)
+	err := AutoMap(from, &to)
 
 	if err != nil {
 		t.Fail()
 	}
-	fmt.Println(from.ArrayField,to.ArrayField)
+	fmt.Println(from.ArrayField, to.ArrayField)
+}
+
+func TestAutoMapCanCopyArrayStructFields(t *testing.T) {
+	from := F{[]B{B{Field1: "1", Field2: 2}}}
+	to := DestinationF{[]DestinationB{}}
+
+	err := AutoMap(from, &to)
+
+	if err != nil {
+		t.Fail()
+	}
+	fmt.Println(from, to)
 }
