@@ -54,17 +54,17 @@ func TestAutoMapWorksForSameFieldSet(t *testing.T) {
 }
 
 //TODO: Intentinally ignored different types
-//func TestAutoMapWorksForDifferentFieldSet(t *testing.T) {
-//	from := A{"a", "1"}
-//	to := B{}
-//
-//	err := AutoMap(from, &to)
-//
-//	if from.Field1 != to.Field1 || err != nil {
-//		t.Fail()
-//	}
-//	fmt.Println(from, to)
-//}
+func TestAutoMapWorksForDifferentFieldSet(t *testing.T) {
+	from := A{"a", "1"}
+	to := B{}
+
+	err := AutoMap(from, &to)
+
+	if from.Field1 != to.Field1 || err != nil {
+		t.Fail()
+	}
+	fmt.Println(from, to)
+}
 
 func TestAutoMapWorksForEmbeddedFieldSet(t *testing.T) {
 	from := C{B{"a", 1}}

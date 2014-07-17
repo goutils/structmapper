@@ -24,30 +24,33 @@ func AutoMap(from interface{}, to interface{}) error {
 		if toFieldExist && fromFieldKind == toFieldType.Type.Kind() {
 			switch fromFieldKind {
 			case reflect.Struct:
-				toStructField := reflect.New(toFieldType.Type)
-				AutoMap(fromField.Interface(), toStructField.Interface())
-				toVal.FieldByName(fromFieldTypeName).Set(toStructField.Elem())
+					toStructField := reflect.New(toFieldType.Type)
+					AutoMap(fromField.Interface(), toStructField.Interface())
+					toVal.FieldByName(fromFieldTypeName).Set(toStructField.Elem())
 			case reflect.Slice:
 				if reflect.ValueOf(fromField.Type()).Interface() == toFieldType.Type {
 					toVal.FieldByName(fromFieldTypeName).Set(fromField)
 				} else {
-
 					toFieldElemType := toVal.FieldByName(fromFieldTypeName).Type().Elem()
-					toSliceField := reflect.New(toFieldType.Type).Elem()
-					for i := 0; i < fromField.Len(); i++ {
-						fromFieldElem :=  fromField.Index(i)
-						toFieldElem := reflect.New(toFieldElemType)
-						log.Println(toFieldElem.Interface())
-						AutoMap(fromFieldElem.Interface(),toFieldElem.Interface())
-						toSliceField = reflect.Append(toSliceField, toFieldElem.Elem())
-					}
+					if fromField.Type().Elem().Kind() == toFieldElemType.Kind() {
 
-					toVal.FieldByName(fromFieldTypeName).Set(toSliceField)
+						toSliceField := reflect.New(toFieldType.Type).Elem()
+						for i := 0; i < fromField.Len(); i++ {
+							fromFieldElem := fromField.Index(i)
+							toFieldElem := reflect.New(toFieldElemType)
+							log.Println(toFieldElem.Interface())
+							AutoMap(fromFieldElem.Interface(), toFieldElem.Interface())
+							toSliceField = reflect.Append(toSliceField, toFieldElem.Elem())
+						}
+
+						toVal.FieldByName(fromFieldTypeName).Set(toSliceField)
+					}
 				}
 			default:
 				toVal.FieldByName(fromFieldTypeName).Set(fromField)
 			}
 		}
+
 	}
 
 	return nil
