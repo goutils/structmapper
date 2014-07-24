@@ -2,7 +2,6 @@ package structmapper
 
 import (
 	"reflect"
-	"log"
 )
 
 func main() {
@@ -38,7 +37,6 @@ func AutoMap(from interface{}, to interface{}) error {
 						for i := 0; i < fromField.Len(); i++ {
 							fromFieldElem := fromField.Index(i)
 							toFieldElem := reflect.New(toFieldElemType)
-							log.Println(toFieldElem.Interface())
 							AutoMap(fromFieldElem.Interface(), toFieldElem.Interface())
 							toSliceField = reflect.Append(toSliceField, toFieldElem.Elem())
 						}
