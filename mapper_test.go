@@ -1,9 +1,6 @@
 package structmapper
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
 type A struct {
 	Field1 string
@@ -49,8 +46,6 @@ func TestAutoMapWorksForSameFieldSet(t *testing.T) {
 	if from != to || err != nil {
 		t.Fail()
 	}
-
-	fmt.Println(from, to)
 }
 
 //TODO: Intentinally ignored different types
@@ -63,7 +58,6 @@ func TestAutoMapWorksForDifferentFieldSet(t *testing.T) {
 	if from.Field1 != to.Field1 || err != nil {
 		t.Fail()
 	}
-	fmt.Println(from, to)
 }
 
 func TestAutoMapWorksForEmbeddedFieldSet(t *testing.T) {
@@ -72,14 +66,10 @@ func TestAutoMapWorksForEmbeddedFieldSet(t *testing.T) {
 
 	err := AutoMap(from, &to)
 
-	fmt.Println(">>>>>>>>>>" + from.B.Field1)
-	fmt.Println(">>>>>>>>>>" + to.B.Field1)
-
 	if from.B.Field1 != to.B.Field1 || err != nil {
 		t.Fail()
 	}
 
-	fmt.Println(from, to)
 }
 
 func TestAutoMapCanCopyArrayFields(t *testing.T) {
@@ -91,7 +81,6 @@ func TestAutoMapCanCopyArrayFields(t *testing.T) {
 	if err != nil || len(from.ArrayField) != len(to.ArrayField) {
 		t.Fail()
 	}
-	fmt.Println(from.ArrayField, to.ArrayField)
 }
 
 func TestAutoMapCanCopyArrayStructFields(t *testing.T) {
@@ -100,8 +89,17 @@ func TestAutoMapCanCopyArrayStructFields(t *testing.T) {
 
 	err := AutoMap(from, &to)
 
-	if err != nil ||  len(from.B) != len(to.B){
+	if err != nil || len(from.B) != len(to.B) {
 		t.Fail()
 	}
-	fmt.Println(from, to)
+}
+
+func TestAutoMapCanHandleNil(t *testing.T) {
+	to := A{}
+
+	err := AutoMap(nil, &to)
+
+	if err.Error() != "Cannot map nil" {
+		t.Fail()
+	}
 }

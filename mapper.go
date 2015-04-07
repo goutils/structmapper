@@ -1,6 +1,7 @@
 package structmapper
 
 import (
+	"errors"
 	"reflect"
 )
 
@@ -12,6 +13,9 @@ func fromFieldValues(v reflect.Value, index int) (reflect.Value, reflect.Kind, s
 }
 
 func AutoMap(from interface{}, to interface{}) error {
+	if from == nil {
+		return errors.New("Cannot map nil")
+	}
 	fromVal := reflect.ValueOf(from)
 	toVal := reflect.ValueOf(to).Elem()
 
@@ -23,9 +27,9 @@ func AutoMap(from interface{}, to interface{}) error {
 		if toFieldExist && fromFieldKind == toFieldType.Type.Kind() {
 			switch fromFieldKind {
 			case reflect.Struct:
-					toStructField := reflect.New(toFieldType.Type)
-					AutoMap(fromField.Interface(), toStructField.Interface())
-					toVal.FieldByName(fromFieldTypeName).Set(toStructField.Elem())
+				toStructField := reflect.New(toFieldType.Type)
+				AutoMap(fromField.Interface(), toStructField.Interface())
+				toVal.FieldByName(fromFieldTypeName).Set(toStructField.Elem())
 			case reflect.Slice:
 				if reflect.ValueOf(fromField.Type()).Interface() == toFieldType.Type {
 					toVal.FieldByName(fromFieldTypeName).Set(fromField)
