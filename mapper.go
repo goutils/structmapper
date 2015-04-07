@@ -13,9 +13,10 @@ func fromFieldValues(v reflect.Value, index int) (reflect.Value, reflect.Kind, s
 }
 
 func AutoMap(from interface{}, to interface{}) error {
-	if from == nil {
+	if from == nil || to == nil {
 		return errors.New("Cannot map nil")
 	}
+
 	fromVal := reflect.ValueOf(from)
 	toVal := reflect.ValueOf(to).Elem()
 

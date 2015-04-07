@@ -98,7 +98,6 @@ func TestAutoMapCanHandleNil(t *testing.T) {
 	to := A{}
 
 	err := AutoMap(nil, &to)
-
 	if err.Error() != "Cannot map nil" {
 		t.Fail()
 	}
